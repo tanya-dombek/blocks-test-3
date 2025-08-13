@@ -16,10 +16,9 @@ const Block: React.FC<BlockProps> = ({ text, indicator, imageSrc, newBlock }) =>
   const [indicatorBelow, setIndicatorBelow] = useState(false);
 
   useEffect(() => {
-    if (!textRef.current || !indicatorRef.current) return;
+    if (!textRef.current) return;
 
     const textElement = textRef.current;
-    const indicatorElement = indicatorRef.current;
 
     const calculate = () => {
       const style = getComputedStyle(textElement);
@@ -27,6 +26,13 @@ const Block: React.FC<BlockProps> = ({ text, indicator, imageSrc, newBlock }) =>
       const lines = Math.round(textElement.offsetHeight / lineHeight);
 
       if (lineCount !== lines) setLineCount(lines);
+
+      if (!indicator || !indicatorRef.current) {
+        if (indicatorBelow) setIndicatorBelow(false);
+        return;
+      }
+
+      const indicatorElement = indicatorRef.current;
 
       if (imageSrc && lines <= 2) {
         if (indicatorBelow) setIndicatorBelow(false);
@@ -49,15 +55,12 @@ const Block: React.FC<BlockProps> = ({ text, indicator, imageSrc, newBlock }) =>
     };
     calculate();
 
-    const resizeObserver = new ResizeObserver(() => {
-      calculate();
-    });
+    const resizeObserver = new ResizeObserver(calculate);
     resizeObserver.observe(textElement);
 
     return () => {
       resizeObserver.disconnect();
     };
-
   }, [text, indicator, newBlock, imageSrc, lineCount, indicatorBelow]);
 
   const effectiveLines = (lineCount === 1 && indicatorBelow && !(imageSrc && lineCount <= 2)) ? 2 : lineCount;
