@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import Block from "./components/Block";
 import "./App.scss";
-import img from './assets/img.png';
 import imgFull from './assets/img-full.jpg';
 import type { BlockData, BlockMode } from "./types";
 
