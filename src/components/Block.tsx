@@ -1,86 +1,156 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useEffect, useState, memo ,useCallback } from "react";
 import "./Block.scss";
-import edit from '../assets/edit.svg'
+import editIcon from '../assets/edit.svg'
+import editPrimeIcon from '../assets/edit-pimary.svg'
+import type { BlockData, BlockMode } from "../types";
+import textIcon from "../assets/text.svg";
+import topIcon from "../assets/top.svg";
+import bottomIcon from "../assets/bottom.svg";
+import leftIcon from "../assets/left.svg";
+import postIcon from "../assets/post.svg";
+import cancelIcon from "../assets/cancel.svg";
 
-interface BlockProps {
-  text: string;
+interface BlockProps extends BlockData {
   indicator: number;
-  imageSrc?: string;
   newBlock: number;
+  saveEdit: (id: string, newText: string, newMode: BlockMode) => void;
 }
 
-const Block: React.FC<BlockProps> = ({ text, indicator, imageSrc, newBlock }) => {
+const modeIcons = {
+  text: textIcon,
+  top: topIcon,
+  bottom: bottomIcon,
+  left: leftIcon
+};
+
+const Block: React.FC<BlockProps> = memo(({ id, text, mode, indicator, imageSrc, newBlock, saveEdit }) => {
   const textRef = useRef<HTMLSpanElement>(null);
   const indicatorRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [lineCount, setLineCount] = useState(1);
   const [indicatorBelow, setIndicatorBelow] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [currentMode, setCurrentMode] = useState(mode);
+  const [currentText, setCurrentText] = useState(text);
+  const [disabled, setDisabled] = useState(true);
+
+  const calculateLayout = useCallback(() => {
+    const element = isEditing ? textareaRef.current : textRef.current;
+    if (!element) return;
+
+    const style = getComputedStyle(element);
+    const lh = parseFloat(style.lineHeight);
+    const lines = Math.round(element.offsetHeight / lh);
+    if (lineCount !== lines) setLineCount(lines);
+
+    if (!indicator || !indicatorRef.current) {
+      setIndicatorBelow(false);
+      return;
+    }
+
+    if (imageSrc && lines <= 2) {
+      setIndicatorBelow(false);
+      return;
+    }
+
+    const originalHeight = element.offsetHeight;
+    const spacer = document.createElement("span");
+    spacer.innerHTML = "\u00A0";
+    spacer.style.display = "inline-block";
+    spacer.style.width = `${indicatorRef.current.offsetWidth}px`;
+    spacer.style.height = "1px";
+    element.appendChild(spacer);
+    const newHeight = element.offsetHeight;
+    element.removeChild(spacer);
+
+    setIndicatorBelow(newHeight > originalHeight);
+  }, [isEditing, indicator, imageSrc, lineCount, newBlock]);
 
   useEffect(() => {
-    if (!textRef.current) return;
+    calculateLayout();
+    const observer = new ResizeObserver(calculateLayout);
+    const element = isEditing ? textareaRef.current : textRef.current;
+    if (element) observer.observe(element);
+    return () => observer.disconnect();
+  }, [calculateLayout, isEditing]);
 
-    const textElement = textRef.current;
+  useEffect(() => {
+    setDisabled(currentText === "" || (currentText === text && currentMode === mode));
+  }, [currentText, currentMode, text, mode]);
 
-    const calculate = () => {
-      const style = getComputedStyle(textElement);
-      const lineHeight = parseFloat(style.lineHeight);
-      const lines = Math.round(textElement.offsetHeight / lineHeight);
+  useEffect(() => {
+    if (isEditing && textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
+    }
+  }, [isEditing, currentText]);
 
-      if (lineCount !== lines) setLineCount(lines);
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setCurrentText(e.target.value);
+  }
 
-      if (!indicator || !indicatorRef.current) {
-        if (indicatorBelow) setIndicatorBelow(false);
-        return;
-      }
+  const cancelEdit = () => {
+    setIsEditing(false);
+    setMenuOpen(false);
+    setCurrentText(text);
+    setCurrentMode(mode);
+  }
 
-      const indicatorElement = indicatorRef.current;
-
-      if (imageSrc && lines <= 2) {
-        if (indicatorBelow) setIndicatorBelow(false);
-        return;
-      }
-
-      const originalHeight = textElement.offsetHeight;
-      const testSpan = document.createElement("span");
-      testSpan.innerHTML = "\u00A0";
-      testSpan.style.display = "inline-block";
-      testSpan.style.width = indicatorElement.offsetWidth + "px";
-      testSpan.style.height = "1px";
-
-      textElement.appendChild(testSpan);
-      const newHeight = textElement.offsetHeight;
-      textElement.removeChild(testSpan);
-
-      const heightIncreased = newHeight > originalHeight;
-      if (indicatorBelow !== heightIncreased) setIndicatorBelow(heightIncreased);
-    };
-    calculate();
-
-    const resizeObserver = new ResizeObserver(calculate);
-    resizeObserver.observe(textElement);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
-  }, [text, indicator, newBlock, imageSrc, lineCount, indicatorBelow]);
+  const saveChanges = () => {
+    saveEdit(id, currentText, currentMode);
+    setIsEditing(false);
+    setMenuOpen(false);
+  };
 
   const effectiveLines = (lineCount === 1 && indicatorBelow && !(imageSrc && lineCount <= 2)) ? 2 : lineCount;
 
   return (
-    <div className={`block ${imageSrc ? "with-image" : "no-image"} ${imageSrc && effectiveLines <= 2 ? "center-text" : ""} ${indicatorBelow ? "indicator-below" : ""}`} >
-      {imageSrc && (
-        <div className="image-wrapper">
-          <img src={imageSrc} alt="block" />
+    <div className={`block ${imageSrc ? "with-image" : ""} ${indicatorBelow ? "indicator-below" : ""} ${isEditing ? "edit" : ""}`} >
+      {menuOpen && (
+        <div className="mode-menu">
+          {(["text", "bottom", "top", "left"] as BlockMode[]).map((mode) => (
+              <button key={mode} onClick={() => setCurrentMode(mode)}>
+                <img src={modeIcons[mode]} alt={`${mode} mode`} />
+              </button>
+            )
+          )}
         </div>
       )}
-      <div className={`text ${effectiveLines === 1 ? "single-line" : "multi-line"}`}>
-        <span ref={textRef} className="text-content">{text}</span>
+      {isEditing && (
+        <div className="edit-menu">
+          <div className="top-menu">
+            <button className="cancel-btn" onClick={cancelEdit}><img src={cancelIcon} alt="cancel button"/></button>
+            <button className="mode-btn" onClick={() => setMenuOpen(prev => !prev)}><img src={modeIcons[currentMode]} alt="mode button"/></button>
+            <button className="post-btn" onClick={saveChanges} disabled={disabled}><img src={postIcon} alt="post button"/></button>
+          </div>
+        </div>
+      )}
+      <div className={`content ${currentMode} ${currentMode !== 'text' && effectiveLines <= 2 ? "center-text" : ""} ${isEditing ? "edit-text" : ""}`}>
+        {currentMode !== 'text' && (
+          <div className={`image-wrapper ${currentMode}`}>
+            <img src={imageSrc} alt="block image" />
+          </div>
+        )}
+        <div className={`text ${effectiveLines === 1 ? "single-line" : "multi-line"} ${currentMode}`}>
+          {isEditing ? (
+            <textarea value={currentText} ref={textareaRef} rows={1}
+              onChange={handleTextChange}
+              placeholder="Write your idea!"/>
+          ) : 
+            (<span ref={textRef} className="text-content">{text}</span>)
+          }
+          
+        </div>
       </div>
-      <div className="right-col">
-        <img src={edit} alt="edit button" className="menu-btn"/>
-        {indicator > 0 && <div ref={indicatorRef} className={`indicator ${newBlock > 0 ? "new-block" : ""}`}>{newBlock > 0 ? `+${newBlock}` : indicator}</div>}
-      </div>
+      {!isEditing && (
+        <div className="right-col">
+          <button className={`edit-btn ${mode === "top" ? "top" : ""}`} onClick={() => setIsEditing(true)}><img src={(mode === "top") ? editPrimeIcon : editIcon} alt="edit button"/></button>
+          {indicator > 0 && <div ref={indicatorRef} className={`indicator ${newBlock > 0 ? "new-block" : ""} ${mode === "bottom" ? "bottom" : ""}`}>{newBlock > 0 ? `+${newBlock}` : indicator}</div>}
+        </div>
+      )}
     </div>
   );
-};
+});
 
 export default Block;

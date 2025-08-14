@@ -27,4 +27,4 @@ The server should now be running. You can access the application by opening a we
 
 App is deployed!
 
-See it on [https://tanya-dombek.github.io/blocks-test-1](https://tanya-dombek.github.io/blocks-test-1).
+See it on [https://tanya-dombek.github.io/blocks-test-2](https://tanya-dombek.github.io/blocks-test-2).
