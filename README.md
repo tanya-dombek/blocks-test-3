@@ -3,7 +3,7 @@
 Clone the project
 
 ```bash
-  git clone https://github.com/tanya-dombek/blocks-test-1
+  git clone https://github.com/tanya-dombek/blocks-test-2
 ```
 
 Install dependencies

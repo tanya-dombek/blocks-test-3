@@ -36,36 +36,38 @@ const Block: React.FC<BlockProps> = memo(({ id, text, mode, indicator, imageSrc,
   const [disabled, setDisabled] = useState(true);
 
   const calculateLayout = useCallback(() => {
-    const element = isEditing ? textareaRef.current : textRef.current;
+    const element = isEditing ? textareaRef.current : textRef.current;    
     if (!element) return;
 
     const style = getComputedStyle(element);
     const lh = parseFloat(style.lineHeight);
-    const lines = Math.round(element.offsetHeight / lh);
+    const lines = Math.round(element.offsetHeight / lh);    
     if (lineCount !== lines) setLineCount(lines);
-
-    if (!indicator || !indicatorRef.current) {
+    
+    if (!indicator || !indicatorRef.current) {      
+      if (indicatorBelow) setIndicatorBelow(false);
+      return;
+    }
+        
+    if (currentMode === 'left' && lines <= 2) {
       setIndicatorBelow(false);
       return;
     }
 
-    if (imageSrc && lines <= 2) {
-      setIndicatorBelow(false);
-      return;
-    }
-
-    const originalHeight = element.offsetHeight;
+    const originalHeight = element.offsetHeight;    
     const spacer = document.createElement("span");
     spacer.innerHTML = "\u00A0";
     spacer.style.display = "inline-block";
     spacer.style.width = `${indicatorRef.current.offsetWidth}px`;
     spacer.style.height = "1px";
     element.appendChild(spacer);
-    const newHeight = element.offsetHeight;
+    const newHeight = element.offsetHeight;    
     element.removeChild(spacer);
 
-    setIndicatorBelow(newHeight > originalHeight);
-  }, [isEditing, indicator, imageSrc, lineCount, newBlock]);
+    const heightIncreased = newHeight > originalHeight;
+    
+    if (indicatorBelow !== heightIncreased) setIndicatorBelow(heightIncreased);
+  }, [isEditing, indicator, imageSrc, lineCount, newBlock, indicatorBelow, currentMode]);
 
   useEffect(() => {
     calculateLayout();
@@ -84,7 +86,7 @@ const Block: React.FC<BlockProps> = memo(({ id, text, mode, indicator, imageSrc,
       textareaRef.current.style.height = "auto";
       textareaRef.current.style.height = textareaRef.current.scrollHeight + "px";
     }
-  }, [isEditing, currentText]);
+  }, [isEditing, currentText, currentMode]);
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setCurrentText(e.target.value);

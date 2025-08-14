@@ -69,12 +69,9 @@ $main-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.1);
 
       .cancel-btn {
         @include button-reset;
-
-        img {
-          height: 11px;
-          width: 10px;
-          @include image-block;
-        }
+        @include flex-center;
+        height: 24px;
+        width: 24px;
       }
 
       .mode-btn {
@@ -100,15 +97,8 @@ $main-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.1);
         background: $blue-gradient;
         box-shadow: $blue-shadow;
         @include flex-center;
-        padding: 0 6px;
         width: 24px;
         height: 24px;
-
-        img {
-          height: 11px;
-          width: 10px;
-          @include image-block;
-        }
 
         &:disabled {
           cursor: default;
@@ -217,6 +207,8 @@ $main-shadow: 0px 1px 8px 0px rgba(0, 0, 0, 0.1);
       &.single-line {
         padding-top: 24px;
         padding-bottom: 24px;
+        display: flex;
+        align-items: center;
       }
 
       &.multi-line {
