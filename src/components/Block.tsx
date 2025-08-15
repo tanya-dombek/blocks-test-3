@@ -105,10 +105,10 @@ const Block: React.FC<BlockProps> = memo(({ id, text, mode, indicator, imageSrc,
     setMenuOpen(false);
   };
 
-  const effectiveLines = (lineCount === 1 && indicatorBelow && !(imageSrc && lineCount <= 2)) ? 2 : lineCount;
+  const effectiveLines = (lineCount === 1 && indicatorBelow && !(currentMode !== 'text' && lineCount <= 2)) ? 2 : lineCount;
 
   return (
-    <div className={`block ${imageSrc ? "with-image" : ""} ${indicatorBelow ? "indicator-below" : ""} ${isEditing ? "edit" : ""}`} >
+    <div className={`block ${(indicatorBelow && currentMode !== 'bottom') ? "indicator-below" : ""} ${isEditing ? "edit" : ""}`} >
       {menuOpen && (
         <div className="mode-menu">
           {(["text", "bottom", "top", "left"] as BlockMode[]).map((mode) => (
