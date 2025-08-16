@@ -1,3 +1,9 @@
+@use './Block';
+@use './EditMenu';
+@use './ModeMenu';
+@use './BlockContent';
+@use './RightCol';
+
 .app {
   padding: 40px;
   display: flex;
@@ -6,7 +12,7 @@
   .blocks {
     display: flex;
     flex-direction: column;
-    gap: 37px;
+    gap: 24px;
   }
 
   .controls {

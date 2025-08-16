@@ -1,0 +1,31 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+.block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  border-radius: 25px;
+  background: $white;
+  word-break: break-word;
+  box-shadow: $main-shadow;
+  width: 345px;
+
+  &.focused {
+    @include gradient-border($blue-gradient-edit, 25px, $white, $blue-shadow);
+  }
+
+  &.selected {
+    background-color: $blue-bg;
+    box-shadow: $blue-shadow;
+    &.focused::before { background: $blue-bg; }
+  }
+
+  &.edit {
+    padding: 0; background: $white;
+  }
+
+  &.indicator-below {
+    padding-bottom: 19px;
+  }
+}

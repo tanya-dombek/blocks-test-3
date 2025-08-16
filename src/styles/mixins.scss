@@ -1,0 +1,54 @@
+@use './variables' as *;
+
+@mixin button-reset {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+}
+
+@mixin button-hover {
+  &:hover {
+    background-color: $gray-light;
+    transition: all 0.5s;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin image-block {
+  display: block;
+  object-fit: contain;
+}
+
+@mixin border-with-hover {
+  border: 0.5px solid $gray-indicator;
+  @include button-hover;
+}
+
+@mixin gradient-border($gradient, $radius: 25px, $bg: $white, $shadow: null) {
+  position: relative;
+  border-radius: $radius;
+  background: $gradient;
+
+  @if $shadow != null {
+    box-shadow: $shadow;
+  }
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: $bg;
+    margin: 1px;
+    z-index: 0;
+  }
+
+  > * {
+    z-index: 1;
+  }
+}

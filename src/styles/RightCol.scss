@@ -1,0 +1,56 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+.right-col {
+  position: absolute;
+  top: 9px;
+  right: 13px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 4px;
+  height: calc(100% - 18px);
+
+  .edit-btn {
+    @include button-reset;
+    margin-right: 5px;
+
+    img { display: block; }
+
+    &.top {
+      background: $gray-backdrop;
+      border-radius: 11px;
+      padding: 10px 6px;
+      margin-right: -4px;
+      backdrop-filter: blur(4.4px);
+    }
+  }
+
+  .indicator {
+    min-width: 22px;
+    height: 22px;
+    border: 0.5px solid $gray-border-light;
+    color: $gray-border-light;
+    border-radius: 999px;
+    font-size: 12px;
+    @include flex-center;
+    padding: 0 9px;
+    white-space: nowrap;
+
+    &.bottom {
+      background: $gray-backdrop-dark;
+      color: $white;
+      border: none;
+      backdrop-filter: blur(9px);
+    }
+
+    &.new-block {
+      color: $white;
+      background: $blue-gradient;
+      box-shadow: $blue-shadow;
+      border: none;
+      text-align: center;
+    }
+  }
+}

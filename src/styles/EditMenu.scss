@@ -1,0 +1,46 @@
+@use './variables' as *;
+@use './mixins' as *;
+
+.edit-menu {
+  height: 100%;
+  padding: 16px;
+
+  .top-menu {
+    display: flex;
+    gap: 24px;
+
+    .cancel-btn {
+      @include button-reset; @include flex-center; width: 24px; height: 24px;
+    }
+
+    .mode-btn {
+      @include button-reset;
+      @include border-with-hover;
+      border-radius: 5px;
+      padding: 3px;
+      height: 24px;
+      width: 24px;
+      @include flex-center;
+      margin-left: auto;
+
+      img {
+        max-height: 11px; max-width: 17px; @include image-block;
+      }
+    }
+    .post-btn {
+      border-radius: 999px;
+      @include button-reset;
+      background: $blue-gradient;
+      box-shadow: $blue-shadow;
+      @include flex-center;
+      width: 24px;
+      height: 24px;
+
+      &:disabled {
+        cursor: default;
+        background: $gray-disabled;
+        box-shadow: none;
+      }
+    }
+  }
+}

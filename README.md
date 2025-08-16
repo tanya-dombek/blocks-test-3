@@ -3,7 +3,7 @@
 Clone the project
 
 ```bash
-  git clone https://github.com/tanya-dombek/blocks-test-2
+  git clone https://github.com/tanya-dombek/blocks-test-3
 ```
 
 Install dependencies
@@ -23,8 +23,11 @@ The server should now be running. You can access the application by opening a we
 ```bash
   http://localhost:5173/
 ```
+
+If there are some errors try to delete localStorage first
+
 ## Deployment
 
 App is deployed!
 
-See it on [https://tanya-dombek.github.io/blocks-test-2](https://tanya-dombek.github.io/blocks-test-2).
+See it on [https://tanya-dombek.github.io/blocks-test-3](https://tanya-dombek.github.io/blocks-test-3).
