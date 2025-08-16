@@ -16,7 +16,7 @@ const EditMenu: React.FC<EditMenuProps> = ({currentMode, cancelEdit, setMenuOpen
         <button className="cancel-btn" onClick={cancelEdit}>
           <img src={cancelIcon} alt="cancel button"/>
         </button>
-        <button className="mode-btn" onClick={() => setMenuOpen(prev => !prev)}>
+        <button className={`mode-btn ${currentMode === 'text' ? 'text-icon' : ''}`} onClick={() => setMenuOpen(prev => !prev)}>
           <img src={modeIcons[currentMode]} alt="mode button"/>
         </button>
         <button className="post-btn" onClick={saveChanges} disabled={disabled}>

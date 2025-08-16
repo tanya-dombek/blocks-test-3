@@ -6,6 +6,14 @@ import type { BlockData, BlockMode } from "./types";
 
 const LOCAL_STORAGE_KEY = "blocks";
 
+const defaultBlocks: BlockData[] = [
+  { id: "1", text: "Drinking water isn't just about quenching", mode: "text", imageSrc: imgFull },
+  { id: "2", text: "Drinking water isn't", mode: "left", imageSrc: imgFull },
+  { id: "3", text: "Drinking water isn't", mode: "bottom", imageSrc: imgFull },
+  { id: "4", text: "Drinking water isn't", mode: "top", imageSrc: imgFull },
+  { id: "5", text: "Drinking water isn't", mode: "text", imageSrc: imgFull }
+];
+
 const App: React.FC = () => {
   // state for testing
   const [indicator, setIndicator] = useState<number>(1);
@@ -13,13 +21,7 @@ const App: React.FC = () => {
 
   const [blocks, setBlocks] = useState<BlockData[]>(() => {
     const saved = localStorage.getItem("blocks");
-    return saved ? JSON.parse(saved) : [
-      { id: "1", text: "Drinking water isn't just about quenching", mode: "text", imageSrc: imgFull },
-      { id: "2", text: "Drinking water isn't", mode: "left", imageSrc: imgFull },
-      { id: "3", text: "Drinking water isn't", mode: "bottom", imageSrc: imgFull },
-      { id: "4", text: "Drinking water isn't", mode: "top", imageSrc: imgFull },
-      { id: "5", text: "Drinking water isn't", mode: "text", imageSrc: imgFull }
-    ];
+    return saved ? JSON.parse(saved) : defaultBlocks;
   });
   const [focusedId, setFocusedId] = useState<string | null>("1");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -71,6 +73,11 @@ const App: React.FC = () => {
     }, []
   );
 
+  const resetBlocks = () => {
+    localStorage.removeItem(LOCAL_STORAGE_KEY);
+    window.location.reload();
+  };
+
   const handleEditToggle = useCallback((id: string) => {
     setEditingId(prev => (prev === id ? null : id));
   }, []);
@@ -114,6 +121,7 @@ const App: React.FC = () => {
         ))}
       </div>
       <div className="controls">
+        <button onClick={resetBlocks}>Reset blocks</button>
         <label>
           Значение индикатора:
           <input

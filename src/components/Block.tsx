@@ -40,7 +40,7 @@ const Block: React.FC<BlockProps> = memo(({ id, text, mode, indicator, imageSrc,
     <div className={`block ${(indicatorBelow && currentMode !== 'bottom') ? "indicator-below" : ""} ${isEditing ? "edit" : ""} 
       ${isFocused ? "focused" : ""} ${isSelected ? "selected" : ""}`} onMouseEnter={onMouseEnter} onClick={onClick}>
 
-      {menuOpen && <ModeMenu setCurrentMode={setCurrentMode}/>}
+      {menuOpen && <ModeMenu setMenuOpen={setMenuOpen} setCurrentMode={setCurrentMode}/>}
       {isEditing && (
         <EditMenu currentMode={currentMode} cancelEdit={cancelEdit} setMenuOpen={setMenuOpen} saveChanges={saveChanges} disabled={disabled}/>
       )}

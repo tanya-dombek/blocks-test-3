@@ -24,7 +24,13 @@
       margin-left: auto;
 
       img {
-        max-height: 11px; max-width: 17px; @include image-block;
+        height: 11px;
+        width: 17px;
+        @include image-block;
+      }
+
+      &.text-icon img {
+        width: 11px;
       }
     }
     .post-btn {
